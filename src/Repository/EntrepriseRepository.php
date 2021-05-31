@@ -47,4 +47,32 @@ class EntrepriseRepository extends ServiceEntityRepository
         ;
     }
     */
+//T5DEM NAFES L5EDMA MTA3 FINDALL CHNRAJ3OU LI DONNEE
+
+    public function findUser(): array
+    {
+       
+        //l querybuilder ya3ml les requete sql 3malna methode u
+        $qb = $this->createQueryBuilder('u')
+        ->select('u.email,u.adresse,u.categorie,u.siteweb,u.login,u.numtel,u.domaineAct,u.nomEnp,u.logo,u.typeEnp');
+        //,u.domaine_act,u.type_enp
+        //
+
+          //  ->where('webservice.baseUrl Like :url')
+            //->andWhere('webservice.user = :user')
+            //->setParameter('url', $url)
+           // ->setParameter('user', $user);
+
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+
+        // to get just one result:
+        //
+    } 
+
+
+
+
 }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EntrepriseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -79,6 +81,16 @@ class Entreprise implements UserInterface
      * @ORM\ManyToOne(targetEntity=Categorie::class, inversedBy="categorie")
      */
     private $categories;
+
+    /**
+     * @ORM\OneToMany(targetEntity=AppelOffre::class, mappedBy="entreprise", orphanRemoval=true)
+     */
+    private $appelOffres;
+
+    public function __construct()
+    {
+        $this->appelOffres = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -243,6 +255,36 @@ class Entreprise implements UserInterface
 
     public function getPassword(){
         return $this->motpass;
+    }
+
+    /**
+     * @return Collection|AppelOffre[]
+     */
+    public function getAppelOffres(): Collection
+    {
+        return $this->appelOffres;
+    }
+
+    public function addAppelOffre(AppelOffre $appelOffre): self
+    {
+        if (!$this->appelOffres->contains($appelOffre)) {
+            $this->appelOffres[] = $appelOffre;
+            $appelOffre->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAppelOffre(AppelOffre $appelOffre): self
+    {
+        if ($this->appelOffres->removeElement($appelOffre)) {
+            // set the owning side to null (unless already changed)
+            if ($appelOffre->getEntreprise() === $this) {
+                $appelOffre->setEntreprise(null);
+            }
+        }
+
+        return $this;
     }
 
 }

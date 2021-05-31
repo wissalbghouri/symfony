@@ -72,6 +72,120 @@ if (!$entreprise){
 
 
  /**
+     * @Route("/editProfil",name="edit_profil",methods={"post"})
+     */
+    public function editProfile(Request $request){
+        $result = json_decode($request->getContent(),true);
+        $em = $this->container->get('doctrine')->getManager();
+        $Entreprise = $em->getRepository(Entreprise::class)->findOneBy(array('id' => (int)$result['idUser']));
+        if($Entreprise){
+
+           // dd($Entreprise->getEmail());
+           if($Entreprise->getEmail() == $result['email']){
+              // dd('here');
+            $Entreprise->setNomEnp($result['nomEnp'])
+            ->setDomaineAct($result['domaineAct'])
+            ->setLogin($result['login'])
+            ->setNumtel($result['numtel'])
+            ->setSiteweb($result['siteweb'])
+            ->setCategorie($result['categorie'])
+            ->setLogo($result['logo'])
+           // ->setMotpass($result['motpass'])
+
+            //->setTypeEnp($result['typeEnp'])
+          
+            ->setAdresse($result['adresse']);
+
+            $em->persist($Entreprise);
+            $em->flush();
+            $response = new Response();
+                    $response->setContent(json_encode(array(
+                        'result' => 'Job done !',
+                    )));
+                    $response->setStatusCode(200    );
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;
+
+
+
+
+           }
+
+           else{
+            $us = $em->getRepository(Entreprise::class)->findOneBy(array('email' => $result['email']));
+              // dd($us);
+              if($us){
+                  //entreprise exist
+                 // dd('entreprise exist');
+                 $response = new Response();
+                 $response->setContent(json_encode(array(
+                     'result' => 'entreprise already exist !',
+                 )));
+                 $response->setStatusCode(400    );
+                 $response->headers->set('Content-Type', 'application/json');
+                 return $response;
+
+
+
+              }
+              else{
+                  //entreprise not exist
+                  dd('entreprise not exist');
+
+
+
+              }
+
+
+
+
+              
+
+
+
+
+           }
+
+
+
+        }
+    
+        return new Response();
+    }
+
+
+    /**
+     * @Route("/getusers",name="get_users",methods={"get"})
+     */
+    public function getAllUsers(){
+        $em = $this->container->get('doctrine')->getManager();
+
+        $us = $em->getRepository(Entreprise::class)->findUser();
+        
+        $serializer = $this->container->get('serializer');
+         $itemSerializer = $serializer->serialize($us, 'json');
+       // dd($itemSerializer);
+         return new Response( $itemSerializer );
+     // $response = new Response($itemSerializer );
+       //  $response->setContent( $itemSerializer);
+      //   $response->setStatusCode(200    );
+     // $response->headers->set('Content-Type', 'application/json');
+//  return $response;
+       // return new Response();
+    }
+
+    
+    
+
+
+
+
+
+
+
+
+
+ /**
      * @Route("/getuser",name="getuser",methods={"post"})
      */
 
