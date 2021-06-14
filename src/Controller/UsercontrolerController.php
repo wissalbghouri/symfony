@@ -75,7 +75,9 @@ if (!$entreprise){
      * @Route("/editProfil",name="edit_profil",methods={"post"})
      */
     public function editProfile(Request $request){
+//dd($request->getContent());
         $result = json_decode($request->getContent(),true);
+       // dd($result);
         $em = $this->container->get('doctrine')->getManager();
         $Entreprise = $em->getRepository(Entreprise::class)->findOneBy(array('id' => (int)$result['idUser']));
         if($Entreprise){
@@ -89,7 +91,7 @@ if (!$entreprise){
             ->setNumtel($result['numtel'])
             ->setSiteweb($result['siteweb'])
             ->setCategorie($result['categorie'])
-            ->setLogo($result['logo'])
+            ->setLogo($result['image'])
            // ->setMotpass($result['motpass'])
 
             //->setTypeEnp($result['typeEnp'])
@@ -98,6 +100,7 @@ if (!$entreprise){
 
             $em->persist($Entreprise);
             $em->flush();
+            dd($Entreprise->getId());
             $response = new Response();
                     $response->setContent(json_encode(array(
                         'result' => 'Job done !',
@@ -151,6 +154,20 @@ if (!$entreprise){
         }
     
         return new Response();
+    }
+
+
+
+      /**
+     * @Route("picture/new",name="upload",methods={"POST"})
+     */  
+    public function uploadImage(Request $request){
+        $uploadedFile = $request->files->get('image');
+        //   dd( $uploadedFile->getClientOriginalName());
+           $destination = $this->getParameter('kernel.project_dir').'/public/uploads';
+       $uploadedFile->move($destination,$uploadedFile->getClientOriginalName());
+       
+       return new Response();
     }
 
 

@@ -87,9 +87,21 @@ class Entreprise implements UserInterface
      */
     private $appelOffres;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Offredemploi::class, mappedBy="entreprise", orphanRemoval=true)
+     */
+    private $offredemplois;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Formation::class, mappedBy="entreprise", orphanRemoval=true)
+     */
+    private $formations;
+
     public function __construct()
     {
         $this->appelOffres = new ArrayCollection();
+        $this->offredemplois = new ArrayCollection();
+        $this->formations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -281,6 +293,66 @@ class Entreprise implements UserInterface
             // set the owning side to null (unless already changed)
             if ($appelOffre->getEntreprise() === $this) {
                 $appelOffre->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Offredemploi[]
+     */
+    public function getOffredemplois(): Collection
+    {
+        return $this->offredemplois;
+    }
+
+    public function addOffredemploi(Offredemploi $offredemploi): self
+    {
+        if (!$this->offredemplois->contains($offredemploi)) {
+            $this->offredemplois[] = $offredemploi;
+            $offredemploi->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOffredemploi(Offredemploi $offredemploi): self
+    {
+        if ($this->offredemplois->removeElement($offredemploi)) {
+            // set the owning side to null (unless already changed)
+            if ($offredemploi->getEntreprise() === $this) {
+                $offredemploi->setEntreprise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Formation[]
+     */
+    public function getFormations(): Collection
+    {
+        return $this->formations;
+    }
+
+    public function addFormation(Formation $formation): self
+    {
+        if (!$this->formations->contains($formation)) {
+            $this->formations[] = $formation;
+            $formation->setEntreprise($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormation(Formation $formation): self
+    {
+        if ($this->formations->removeElement($formation)) {
+            // set the owning side to null (unless already changed)
+            if ($formation->getEntreprise() === $this) {
+                $formation->setEntreprise(null);
             }
         }
 
